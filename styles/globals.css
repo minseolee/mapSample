@@ -1,0 +1,53 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.image-container {
+  width: 1024px;
+  height: 768px;
+
+  cursor: grab;
+
+  background-image: url("/images/map.png");
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+
+.reset-button {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  z-index: 100;
+
+  cursor: pointer;
+}
+
+.markers {
+  position: absolute;
+  display: block;
+
+  width: 118px;
+  height: 144px;
+}
