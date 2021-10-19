@@ -29,6 +29,7 @@ a {
   height: 768px;
 
   cursor: grab;
+  user-select: none;
 
   background-image: url("/images/map.png");
   background-position: 0 0;

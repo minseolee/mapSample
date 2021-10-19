@@ -13,6 +13,12 @@ Second, build the code as production build:
 npm run build
 ```
 
+if some error occurs (such as M1) please run as
+
+````bash
+npm run dev
+````
+
 Third, Open [http://localhost:3000](http://localhost:3000)
 
 ### Recommend Chrome browser

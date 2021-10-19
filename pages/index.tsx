@@ -31,6 +31,7 @@ export default function Main() {
       style={{top: event.clientY - 118, left: event.clientX - 50}}
       className="markers"
       key={Math.random()}
+      draggable={false}
       />]
     );
   }
@@ -46,8 +47,6 @@ export default function Main() {
     const mapRefCurrentChild = mapRefCurrent.children[0] as HTMLElement;
 
     if (event.movementX + currentDisplayPositionX <= 0) {
-      console.log(markerCurrentPositionX, event.movementX);
-
       mapRefCurrent.style.backgroundPositionX = `${event.movementX + currentDisplayPositionX}px`;
       if (markersLength) mapRefCurrentChild.style.left = `${markerCurrentPositionX + event.movementX - 50}px`;
     }
@@ -64,6 +63,10 @@ export default function Main() {
   }
 
   function mouseupHandler(): void {
+    isMouseClicked = false;
+  }
+
+  function mouseleaveHandler(): void {
     isMouseClicked = false;
   }
 
@@ -90,6 +93,7 @@ export default function Main() {
       mapRefCurrent.addEventListener('mousemove', (event: MouseEvent) => { mousemoveHandler(event); });
       mapRefCurrent.addEventListener('mouseup', () => { mouseupHandler(); });
       mapRefCurrent.addEventListener('contextmenu', (event: MouseEvent) => { contextmenuHandler(event); });
+      mapRefCurrent.addEventListener('mouseleave', () => { mouseleaveHandler(); });
     }
 
     DOMAccessed = true;
@@ -99,6 +103,7 @@ export default function Main() {
       mapRefCurrent.removeEventListener('mousemove', mousemoveHandler);
       mapRefCurrent.removeEventListener('mouseup', mouseupHandler);
       mapRefCurrent.removeEventListener('contextmenu', contextmenuHandler);
+      mapRefCurrent.removeEventListener('mouseleave', mouseleaveHandler);
     }
   }, [mapRef, isMouseClicked]);
 
