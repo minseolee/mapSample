@@ -1,6 +1,9 @@
 import Head from 'next/head'
 import {MutableRefObject, useEffect, useRef, useState} from "react";
 
+const MARKERMARGINX: number = 50; // for better marker position Accuracy
+const MARKERMARGINY: number = 118;
+
 let isMouseClicked: boolean = false;  // flag for drag
 
 let currentDisplayPositionX: number = 0;
@@ -28,7 +31,7 @@ export default function Main() {
     setMarkersState(() =>
       [<img
       src={"/images/marker.png"}
-      style={{top: event.clientY - 118, left: event.clientX - 50}}
+      style={{top: event.clientY - MARKERMARGINY, left: event.clientX - MARKERMARGINX}}
       className="markers"
       key={Math.random()}
       draggable={false}
@@ -46,13 +49,13 @@ export default function Main() {
     const mapRefCurrent = mapRef.current as HTMLElement;
     const mapRefCurrentChild = mapRefCurrent.children[0] as HTMLElement;
 
-    if (event.movementX + currentDisplayPositionX <= 0) {
+    if (event.movementX + currentDisplayPositionX < 0) {
       mapRefCurrent.style.backgroundPositionX = `${event.movementX + currentDisplayPositionX}px`;
-      if (markersLength) mapRefCurrentChild.style.left = `${markerCurrentPositionX + event.movementX - 50}px`;
+      if (markersLength) mapRefCurrentChild.style.left = `${markerCurrentPositionX + event.movementX - MARKERMARGINX}px`;
     }
-    if (event.movementY + currentDisplayPositionY <= 0) {
+    if (event.movementY + currentDisplayPositionY < 0) {
       mapRefCurrent.style.backgroundPositionY = `${event.movementY + currentDisplayPositionY}px`;
-      if (markersLength) mapRefCurrentChild.style.top = `${markerCurrentPositionY + event.movementY - 118}px`;
+      if (markersLength) mapRefCurrentChild.style.top = `${markerCurrentPositionY + event.movementY - MARKERMARGINY}px`;
     }
 
     currentDisplayPositionX += event.movementX;
@@ -79,8 +82,8 @@ export default function Main() {
 
     markersLength = 0;
 
-    currentDisplayPositionX = 0;
-    currentDisplayPositionY = 0;
+    markerCurrentPositionX = 0;
+    markerCurrentPositionY = 0;
   }
 
   useEffect(() => {
@@ -112,7 +115,7 @@ export default function Main() {
       <Head>
         <title>mapSample</title>
       </Head>
-      <div ref={mapRef} className="image-container">
+      <div ref={mapRef} className="image-container" style={{ backgroundPosition: '0 0' }} >
         {markersState}
       </div>
       <img src={"/images/reset.png"} className="reset-button" onClick={() => {resetHandler()}} />
