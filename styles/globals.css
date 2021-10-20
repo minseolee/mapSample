@@ -31,9 +31,16 @@ a {
   cursor: grab;
   user-select: none;
 
-  background-image: url("/images/map.png");
+  /*background-image: url("/images/map.png");*/
   background-position: 0 0;
   background-repeat: no-repeat;
+
+  overflow: hidden;
+}
+
+.image-element {
+  object-fit: none;
+  object-position: 0 0;
 }
 
 .reset-button {

@@ -17,7 +17,8 @@ let markersLength: number = 0;
 let DOMAccessed: boolean = false;
 
 export default function Main() {
-  const mapRef = useRef() as MutableRefObject<HTMLDivElement>;
+  const containerRef = useRef() as MutableRefObject<HTMLDivElement>;
+  const imgRef = useRef() as MutableRefObject<HTMLImageElement>;
   const [markersState, setMarkersState] = useState([<></>]);
   const markersArray: Array<JSX.Element> = [];
 
@@ -46,17 +47,30 @@ export default function Main() {
   function mousemoveHandler(event: MouseEvent): void {
     if (!isMouseClicked) return;
 
-    const mapRefCurrent = mapRef.current as HTMLElement;
-    const mapRefCurrentChild = mapRefCurrent.children[0] as HTMLElement;
+    event.preventDefault();
 
-    if (event.movementX + currentDisplayPositionX < 0) {
-      mapRefCurrent.style.backgroundPositionX = `${event.movementX + currentDisplayPositionX}px`;
-      if (markersLength) mapRefCurrentChild.style.left = `${markerCurrentPositionX + event.movementX - MARKERMARGINX}px`;
+    const containerRefCurrent = containerRef.current as HTMLElement;
+    const containerRefCurrentChild = containerRefCurrent.children[0] as HTMLElement;
+    const imgRefCurrent = imgRef.current as HTMLElement;
+
+    let objectPositionX: number = currentDisplayPositionX;
+    let objectPositionY: number = currentDisplayPositionY;
+
+
+    if (event.movementX + currentDisplayPositionX < 0
+      && event.movementX + currentDisplayPositionX > imgRefCurrent.naturalWidth * -1 + 512
+    ) {
+      objectPositionX = event.movementX + currentDisplayPositionX;
+      if (markersLength) containerRefCurrentChild.style.left = `${markerCurrentPositionX + event.movementX - MARKERMARGINX}px`;
     }
-    if (event.movementY + currentDisplayPositionY < 0) {
-      mapRefCurrent.style.backgroundPositionY = `${event.movementY + currentDisplayPositionY}px`;
-      if (markersLength) mapRefCurrentChild.style.top = `${markerCurrentPositionY + event.movementY - MARKERMARGINY}px`;
+    if (event.movementY + currentDisplayPositionY < 0
+      && event.movementY + currentDisplayPositionY > imgRefCurrent.naturalHeight * -1 + 384
+    ) {
+      objectPositionY = event.movementY + currentDisplayPositionY;
+      if (markersLength) containerRefCurrentChild.style.top = `${markerCurrentPositionY + event.movementY - MARKERMARGINY}px`;
     }
+
+    imgRefCurrent.style.objectPosition = `${objectPositionX}px ${objectPositionY}px`
 
     currentDisplayPositionX += event.movementX;
     currentDisplayPositionY += event.movementY;
@@ -87,35 +101,36 @@ export default function Main() {
   }
 
   useEffect(() => {
-    if (!mapRef || !mapRef.current) return;
+    if (!containerRef || !containerRef.current) return;
 
-    const mapRefCurrent = mapRef.current as HTMLElement;
+    const containerRefCurrent = containerRef.current as HTMLElement;
 
     if (!DOMAccessed) {
-      mapRefCurrent.addEventListener('mousedown', () => { mousedownHandler(); });
-      mapRefCurrent.addEventListener('mousemove', (event: MouseEvent) => { mousemoveHandler(event); });
-      mapRefCurrent.addEventListener('mouseup', () => { mouseupHandler(); });
-      mapRefCurrent.addEventListener('contextmenu', (event: MouseEvent) => { contextmenuHandler(event); });
-      mapRefCurrent.addEventListener('mouseleave', () => { mouseleaveHandler(); });
+      containerRefCurrent.addEventListener('mousedown', () => { mousedownHandler(); });
+      containerRefCurrent.addEventListener('mousemove', (event: MouseEvent) => { mousemoveHandler(event); });
+      containerRefCurrent.addEventListener('mouseup', () => { mouseupHandler(); });
+      containerRefCurrent.addEventListener('contextmenu', (event: MouseEvent) => { contextmenuHandler(event); });
+      containerRefCurrent.addEventListener('mouseleave', () => { mouseleaveHandler(); });
     }
 
     DOMAccessed = true;
 
     return () => {
-      mapRefCurrent.removeEventListener('contextmenu', contextmenuHandler);
-      mapRefCurrent.removeEventListener('mousemove', mousemoveHandler);
-      mapRefCurrent.removeEventListener('mouseup', mouseupHandler);
-      mapRefCurrent.removeEventListener('contextmenu', contextmenuHandler);
-      mapRefCurrent.removeEventListener('mouseleave', mouseleaveHandler);
+      containerRefCurrent.removeEventListener('contextmenu', contextmenuHandler);
+      containerRefCurrent.removeEventListener('mousemove', mousemoveHandler);
+      containerRefCurrent.removeEventListener('mouseup', mouseupHandler);
+      containerRefCurrent.removeEventListener('contextmenu', contextmenuHandler);
+      containerRefCurrent.removeEventListener('mouseleave', mouseleaveHandler);
     }
-  }, [mapRef, isMouseClicked]);
+  }, [containerRef, imgRef, isMouseClicked]);
 
   return (
     <div className="container">
       <Head>
         <title>mapSample</title>
       </Head>
-      <div ref={mapRef} className="image-container" style={{ backgroundPosition: '0 0' }} >
+      <div ref={containerRef} className="image-container">
+        <img ref={imgRef} src={"/images/map.png"} className="image-element" width={'1024px'} height={'768px'} style={{ objectPosition: '1px 1px' }} />
         {markersState}
       </div>
       <img src={"/images/reset.png"} className="reset-button" onClick={() => {resetHandler()}} />
