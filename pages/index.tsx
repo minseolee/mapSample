@@ -19,6 +19,7 @@ let DOMAccessed: boolean = false;
 export default function Main() {
   const containerRef = useRef() as MutableRefObject<HTMLDivElement>;
   const imgRef = useRef() as MutableRefObject<HTMLImageElement>;
+  const markerRef = useRef() as MutableRefObject<HTMLImageElement>;
   const [markersState, setMarkersState] = useState([<></>]);
   const markersArray: Array<JSX.Element> = [];
 
@@ -32,6 +33,7 @@ export default function Main() {
     setMarkersState(() =>
       [<img
       src={"/images/marker.png"}
+      ref={markerRef}
       style={{top: event.clientY - MARKERMARGINY, left: event.clientX - MARKERMARGINX}}
       className="markers"
       key={Math.random()}
@@ -49,9 +51,8 @@ export default function Main() {
 
     event.preventDefault();
 
-    const containerRefCurrent = containerRef.current as HTMLElement;
-    const containerRefCurrentChild = containerRefCurrent.children[0] as HTMLElement;
-    const imgRefCurrent = imgRef.current as HTMLImageElement;
+    const imgRefCurrent: HTMLImageElement = imgRef.current;
+    const markerRefCurrent: HTMLImageElement = markerRef.current;
 
     let objectPositionX: number = currentDisplayPositionX;
     let objectPositionY: number = currentDisplayPositionY;
@@ -60,21 +61,25 @@ export default function Main() {
       && event.movementX + currentDisplayPositionX > imgRefCurrent.naturalWidth * -1 + 1024  // for map width limit accuracy
     ) {
       objectPositionX = event.movementX + currentDisplayPositionX;
+
       currentDisplayPositionX += event.movementX;
-      if (markersLength) containerRefCurrentChild.style.left = `${markerCurrentPositionX + event.movementX - MARKERMARGINX}px`;
+      markerCurrentPositionX += event.movementX;
+
+      if (markerRefCurrent) markerRefCurrent.style.left = `${markerCurrentPositionX + event.movementX - MARKERMARGINX}px`;
     }
+
     if (event.movementY + currentDisplayPositionY < 0
       && event.movementY + currentDisplayPositionY > imgRefCurrent.naturalHeight * -1 + 768 // // for map height limit accuracy
     ) {
       objectPositionY = event.movementY + currentDisplayPositionY;
+
       currentDisplayPositionY += event.movementY;
-      if (markersLength) containerRefCurrentChild.style.top = `${markerCurrentPositionY + event.movementY - MARKERMARGINY}px`;
+      markerCurrentPositionY += event.movementY;
+
+      if (markerRefCurrent) markerRefCurrent.style.top = `${markerCurrentPositionY + event.movementY - MARKERMARGINY}px`;
     }
 
     imgRefCurrent.style.objectPosition = `${objectPositionX}px ${objectPositionY}px`
-
-    markerCurrentPositionX += event.movementX;
-    markerCurrentPositionY += event.movementY;
   }
 
   function mouseupHandler(): void {
@@ -128,7 +133,15 @@ export default function Main() {
         <title>mapSample</title>
       </Head>
       <div ref={containerRef} className="image-container">
-        <img ref={imgRef} src={"/images/map.png"} className="image-element" width={'1024px'} height={'768px'} style={{ objectPosition: '1px 1px' }} />
+        <img
+          ref={imgRef}
+          src={"/images/map.png"}
+          className="image-element"
+          width={'1024px'}
+          height={'768px'}
+          style={{ objectPosition: '1px 1px' }}
+          draggable={false}
+        />
         {markersState}
       </div>
       <img src={"/images/reset.png"} className="reset-button" onClick={() => {resetHandler()}} />
