@@ -51,29 +51,27 @@ export default function Main() {
 
     const containerRefCurrent = containerRef.current as HTMLElement;
     const containerRefCurrentChild = containerRefCurrent.children[0] as HTMLElement;
-    const imgRefCurrent = imgRef.current as HTMLElement;
+    const imgRefCurrent = imgRef.current as HTMLImageElement;
 
     let objectPositionX: number = currentDisplayPositionX;
     let objectPositionY: number = currentDisplayPositionY;
 
-
     if (event.movementX + currentDisplayPositionX < 0
-      && event.movementX + currentDisplayPositionX > imgRefCurrent.naturalWidth * -1 + 512
+      && event.movementX + currentDisplayPositionX > imgRefCurrent.naturalWidth * -1 + 1024  // for map width limit accuracy
     ) {
       objectPositionX = event.movementX + currentDisplayPositionX;
+      currentDisplayPositionX += event.movementX;
       if (markersLength) containerRefCurrentChild.style.left = `${markerCurrentPositionX + event.movementX - MARKERMARGINX}px`;
     }
     if (event.movementY + currentDisplayPositionY < 0
-      && event.movementY + currentDisplayPositionY > imgRefCurrent.naturalHeight * -1 + 384
+      && event.movementY + currentDisplayPositionY > imgRefCurrent.naturalHeight * -1 + 768 // // for map height limit accuracy
     ) {
       objectPositionY = event.movementY + currentDisplayPositionY;
+      currentDisplayPositionY += event.movementY;
       if (markersLength) containerRefCurrentChild.style.top = `${markerCurrentPositionY + event.movementY - MARKERMARGINY}px`;
     }
 
     imgRefCurrent.style.objectPosition = `${objectPositionX}px ${objectPositionY}px`
-
-    currentDisplayPositionX += event.movementX;
-    currentDisplayPositionY += event.movementY;
 
     markerCurrentPositionX += event.movementX;
     markerCurrentPositionY += event.movementY;
