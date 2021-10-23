@@ -9,8 +9,8 @@ let isMouseClicked: boolean = false;  // flag for drag
 let currentDisplayPositionX: number = 0;
 let currentDisplayPositionY: number = 0;
 
-let markerCurrentPositionX: number = 0;
-let markerCurrentPositionY: number = 0;
+let markerCurrentPositionX: number[] = [0];
+let markerCurrentPositionY: number[] = [0];
 
 let markersLength: number = 0;
 
@@ -26,20 +26,34 @@ export default function Main() {
   function contextmenuHandler(event: MouseEvent): void {
     event.preventDefault();
 
-    markerCurrentPositionX = event.clientX;
-    markerCurrentPositionY = event.clientY;
+    markerCurrentPositionX[markersLength] = event.clientX;
+    markerCurrentPositionY[markersLength] = event.clientY;
+
+    const markerElement: JSX.Element = (
+      <img
+        src={"/images/marker.png"}
+        ref={markerRef}
+        style={{top: event.clientY - MARKERMARGINY, left: event.clientX - MARKERMARGINX}}
+        className="markers"
+        key={Math.random()}
+        draggable={false}
+      />
+    );
+
+    // markersArray.push(
+    //   <img
+    //     src={"/images/marker.png"}
+    //     ref={markerRef}
+    //     style={{top: event.clientY - MARKERMARGINY, left: event.clientX - MARKERMARGINX}}
+    //     className="markers"
+    //     key={Math.random()}
+    //     draggable={false}
+    //   />
+    // );
+
+    setMarkersState((markersArray) => [...markersArray, markerElement]);
 
     markersLength += 1;
-    setMarkersState(() =>
-      [<img
-      src={"/images/marker.png"}
-      ref={markerRef}
-      style={{top: event.clientY - MARKERMARGINY, left: event.clientX - MARKERMARGINX}}
-      className="markers"
-      key={Math.random()}
-      draggable={false}
-      />]
-    );
   }
 
   function mousedownHandler(): void {
@@ -52,7 +66,8 @@ export default function Main() {
     event.preventDefault();
 
     const imgRefCurrent: HTMLImageElement = imgRef.current;
-    const markerRefCurrent: HTMLImageElement = markerRef.current;
+
+    const markers = document.getElementsByClassName("markers") as HTMLCollectionOf<HTMLImageElement>;
 
     let objectPositionX: number = currentDisplayPositionX;
     let objectPositionY: number = currentDisplayPositionY;
@@ -63,9 +78,16 @@ export default function Main() {
       objectPositionX = event.movementX + currentDisplayPositionX;
 
       currentDisplayPositionX += event.movementX;
-      markerCurrentPositionX += event.movementX;
 
-      if (markerRefCurrent) markerRefCurrent.style.left = `${markerCurrentPositionX + event.movementX - MARKERMARGINX}px`;
+      for (let i = 0; i < markersLength; i += 1) {
+        markerCurrentPositionX[i] += event.movementX;
+      }
+
+      if (markers) {
+        for (let i = 0; i < markers.length; i += 1) {
+          markers[i].style.left = `${markerCurrentPositionX[i] + event.movementX - MARKERMARGINX}px`;
+        }
+      }
     }
 
     if (event.movementY + currentDisplayPositionY < 0
@@ -74,9 +96,16 @@ export default function Main() {
       objectPositionY = event.movementY + currentDisplayPositionY;
 
       currentDisplayPositionY += event.movementY;
-      markerCurrentPositionY += event.movementY;
 
-      if (markerRefCurrent) markerRefCurrent.style.top = `${markerCurrentPositionY + event.movementY - MARKERMARGINY}px`;
+      for (let i = 0; i < markersLength; i += 1) {
+        markerCurrentPositionY[i] += event.movementY;
+      }
+
+      if (markers) {
+        for (let i = 0; i < markers.length; i += 1) {
+          markers[i].style.top = `${markerCurrentPositionY[i] + event.movementY - MARKERMARGINY}px`;
+        }
+      }
     }
 
     imgRefCurrent.style.objectPosition = `${objectPositionX}px ${objectPositionY}px`
@@ -95,13 +124,16 @@ export default function Main() {
 
     for (let i = 0; i < markersLength; i += 1) {
       markersArray.pop();
+      markerCurrentPositionX.pop();
+      markerCurrentPositionY.pop();
     }
 
     markersLength = 0;
-
-    markerCurrentPositionX = 0;
-    markerCurrentPositionY = 0;
   }
+
+  useEffect(() => {
+    console.log(markersLength, markersArray);
+  }, [markersLength, markersArray]);
 
   useEffect(() => {
     if (!containerRef || !containerRef.current) return;
