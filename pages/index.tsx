@@ -40,17 +40,6 @@ export default function Main() {
       />
     );
 
-    // markersArray.push(
-    //   <img
-    //     src={"/images/marker.png"}
-    //     ref={markerRef}
-    //     style={{top: event.clientY - MARKERMARGINY, left: event.clientX - MARKERMARGINX}}
-    //     className="markers"
-    //     key={Math.random()}
-    //     draggable={false}
-    //   />
-    // );
-
     setMarkersState((markersArray) => [...markersArray, markerElement]);
 
     markersLength += 1;
@@ -130,10 +119,6 @@ export default function Main() {
 
     markersLength = 0;
   }
-
-  useEffect(() => {
-    console.log(markersLength, markersArray);
-  }, [markersLength, markersArray]);
 
   useEffect(() => {
     if (!containerRef || !containerRef.current) return;
