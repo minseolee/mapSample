@@ -9,8 +9,8 @@ let isMouseClicked: boolean = false;  // flag for drag
 let currentDisplayPositionX: number = 0;
 let currentDisplayPositionY: number = 0;
 
-let markerCurrentPositionX: number[] = [0];
-let markerCurrentPositionY: number[] = [0];
+let markerCurrentPositionX: number[] = [0, ];
+let markerCurrentPositionY: number[] = [0, ];
 
 let markersLength: number = 0;
 
@@ -84,8 +84,8 @@ export default function Main() {
       }
 
       if (markers) {
-        for (let i = 0; i < markers.length; i += 1) {
-          markers[i].style.left = `${markerCurrentPositionX[i] + event.movementX - MARKERMARGINX}px`;
+        for (let i = 0; i < markersLength; i += 1) {
+          markers[i].style.left = `${markerCurrentPositionX[i] - MARKERMARGINX}px`;
         }
       }
     }
@@ -102,8 +102,8 @@ export default function Main() {
       }
 
       if (markers) {
-        for (let i = 0; i < markers.length; i += 1) {
-          markers[i].style.top = `${markerCurrentPositionY[i] + event.movementY - MARKERMARGINY}px`;
+        for (let i = 0; i < markersLength; i += 1) {
+          markers[i].style.top = `${markerCurrentPositionY[i] - MARKERMARGINY}px`;
         }
       }
     }
